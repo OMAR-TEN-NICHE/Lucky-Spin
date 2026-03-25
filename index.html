@@ -168,11 +168,18 @@ body::before{
 // weight = how many tickets out of 100 go to this prize
 // Low weight = hard to win = keeps cost down
 const PRIZES = [
-  { label:"10% OFF",   emoji:"💸", name:"10% OFF Voucher",    desc:"10% discount on your next Vibe+ order.",     color:"#E8B84B", textColor:"#0D1B2A", weight:5  },
-  { label:"FREE SHIP", emoji:"🚚", name:"Free Shipping!",      desc:"Free delivery on your next Vibe+ order.",    color:"#3B82F6", textColor:"#fff",     weight:8  },
-  { label:"5% OFF",    emoji:"🏷️", name:"5% OFF Voucher",     desc:"5% discount on your next Vibe+ order.",      color:"#f59e0b", textColor:"#0D1B2A", weight:12 },
-  { label:"No Prize",  emoji:"⚡", name:"Keep Going!",         desc:"Stay focused — Vibe+ has your back!",        color:"#1e3a5f", textColor:"rgba(255,255,255,0.65)", weight:37 },
-  { label:"No Prize",  emoji:"🔄", name:"Better Luck Next Time!", desc:"Every patch is a new chance. Don't stop!", color:"#243447", textColor:"rgba(255,255,255,0.65)", weight:38 },
+  { label:"10% OFF",   emoji:"💸", name:"10% OFF Voucher", desc:"Enjoy 10% off your next purchase.", color:"#E8B84B", textColor:"#0D1B2A", weight:18 },
+  { label:"5% OFF",    emoji:"🏷️", name:"5% OFF Voucher",  desc:"Get 5% off your next order.",       color:"#f59e0b", textColor:"#0D1B2A", weight:20 },
+  { label:"FREE SHIP", emoji:"🚚", name:"Free Shipping",    desc:"Free delivery on your next order.", color:"#3B82F6", textColor:"#fff",     weight:18 },
+
+  { label:"+1 PATCH",  emoji:"🎁", name:"Free 1 Patch",     desc:"Receive 1 free patch.",             color:"#22c55e", textColor:"#0D1B2A", weight:15 },
+  { label:"+2 PATCH",  emoji:"🎉", name:"Free 2 Patches",   desc:"Receive 2 free patches.",           color:"#16a34a", textColor:"#fff",     weight:12 },
+
+  { label:"FREE BOX",  emoji:"📦", name:"Free Box",         desc:"Get 1 full box for free.",          color:"#8b5cf6", textColor:"#fff",     weight:6 },
+  { label:"6 BOX SET", emoji:"🔥", name:"6-Box Bundle",     desc:"Win a full 6-box combo.",           color:"#ef4444", textColor:"#fff",     weight:4 },
+  { label:"SECRET",    emoji:"🎊", name:"Special Mystery Gift", desc:"Unlock a surprise reward.",     color:"#ec4899", textColor:"#fff",     weight:4 },
+
+  { label:"B1G1",      emoji:"🛍️", name:"Buy 1 Get 1 Free", desc:"Buy one, get one free.",            color:"#14b8a6", textColor:"#0D1B2A", weight:3 }
 ];
 
 // Build weighted ticket pool
