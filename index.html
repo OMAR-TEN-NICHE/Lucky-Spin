@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Lucky Spin – Win Prizes!</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(135deg, #fff5f0 0%, #ffe8dc 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 40px;
+    gap: 20px;
+  }
+
+  .logo {
+    font-size: 28px;
+    font-weight: 900;
+    color: #D85A30;
+    letter-spacing: -0.5px;
+    text-align: center;
+  }
+
+  .logo span { color: #333; }
+
+  .step-bar {
+    display: flex;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 40px;
+    overflow: hidden;
+    border: 1px solid #f0c9b8;
+  }
+
+  .step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 4px;
+    background: #fff8f5;
+    font-size: 10px;
+    color: #aaa;
+    font-weight: 700;
+    gap: 4px;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  .step.active { background: #D85A30; color: #fff; }
+  .step.done   { background: #1D9E75; color: #fff; }
+  .step-icon   { font-size: 18px; }
+
+  .card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 24px rgba(216,90,48,0.10);
+    padding: 28px 24px;
+    width: 100%;
+    max-width: 480px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    text-align: center;
+  }
+
+  .card h2 { font-size: 20px; font-weight: 900; color: #222; }
+  .card p  { font-size: 13px; color: #888; font-weight: 700; line-height: 1.5; }
+
+  .code-input-row { display: flex; gap: 8px; width: 100%; }
+
+  .code-input-row input {
+    flex: 1;
+    font-family: 'Nunito', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    text-align: center;
+    text-transform: uppercase;
+    border: 2px solid #f0c9b8;
+    border-radius: 12px;
+    padding: 12px;
+    background: #fff8f5;
+    color: #333;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .code-input-row input:focus { border-color: #D85A30; }
+
+  .btn {
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    border: none;
+    border-radius: 50px;
+    padding: 13px 28px;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.2s;
+    width: 100%;
+  }
+
+  .btn:active { transform: scale(0.97); }
+
+  .btn-primary { background: #D85A30; color: #fff; }
+  .btn-primary:hover { opacity: 0.9; }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1.5px solid #ddd;
+    color: #888;
+  }
+
+  .wheel-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .wheel-container {
+    position: relative;
+    width: 310px;
+    height: 310px;
+  }
+
+  .wheel-pointer {
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 34px solid #D85A30;
+    z-index: 10;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25));
+  }
+
+  #wheel { width: 310px; height: 310px; border-radius: 50%; }
+
+  .btn-spin {
+    background: #D85A30;
+    color: #fff;
+    font-size: 18px;
+    padding: 16px 56px;
+    box-shadow: 0 6px 20px rgba(216,90,48,0.4);
+    letter-spacing: 1px;
+  }
+
+  .btn-spin:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .prize-emoji { font-size: 56px; }
+  .prize-name  { font-size: 24px; font-weight: 900; color: #D85A30; }
+  .prize-desc  { font-size: 13px; color: #888; font-weight: 700; }
+
+  .hint { font-size: 11px; color: #bbb; }
+
+  .hidden { display: none !important; }
+
+  footer {
+    font-size: 11px;
+    color: #ccc;
+    font-weight: 700;
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="logo">🍗 Lucky<span>Spin</span></div>
+
+<div class="step-bar" id="stepBar">
+  <div class="step active" id="s1"><span class="step-icon">🛍️</span><span>Buy &amp; Scan</span></div>
+  <div class="step" id="s2"><span class="step-icon">🔑</span><span>Enter Code</span></div>
+  <div class="step" id="s3"><span class="step-icon">🎡</span><span>Spin!</span></div>
+  <div class="step" id="s4"><span class="step-icon">🎁</span><span>Claim</span></div>
+</div>
+
+<!-- Panel 1: Enter Code -->
+<div class="card" id="panelCode">
+  <div style="font-size:40px">🔑</div>
+  <h2>Enter your lucky code</h2>
+  <p>Find the code on the card inside your packaging after scanning the QR.</p>
+  <div class="code-input-row">
+    <input id="codeInput" type="text" maxlength="8" placeholder="e.g. WIN2025" />
+  </div>
+  <button class="btn btn-primary" onclick="submitCode()">Unlock My Spin →</button>
+  <p class="hint">Demo: enter any code to continue</p>
+</div>
+
+<!-- Panel 2: Spin Wheel -->
+<div id="panelSpin" class="wheel-section hidden">
+  <div class="wheel-container">
+    <div class="wheel-pointer"></div>
+    <canvas id="wheel" width="310" height="310"></canvas>
+  </div>
+  <button class="btn btn-spin" id="spinBtn" onclick="spinWheel()">🎉 SPIN TO WIN!</button>
+</div>
+
+<!-- Panel 3: Result -->
+<div class="card hidden" id="panelResult">
+  <div class="prize-emoji" id="prizeEmoji">🎉</div>
+  <div class="prize-name" id="prizeName">You win!</div>
+  <div class="prize-desc" id="prizeDesc">Congrats on your reward</div>
+  <button class="btn btn-primary" onclick="claimPrize()">Claim My Prize 🎁</button>
+  <button class="btn btn-ghost" onclick="resetGame()">Spin again?</button>
+</div>
+
+<!-- Panel 4: Claimed -->
+<div class="card hidden" id="panelClaimed">
+  <div style="font-size:48px">✅</div>
+  <h2>Prize Claimed!</h2>
+  <p id="claimedMsg">Your reward is on its way. Thank you for playing!</p>
+  <button class="btn btn-primary" onclick="resetGame()">Play again with a new code</button>
+</div>
+
+<footer>© 2025 LuckySpin · All rights reserved</footer>
+
+<script>
+const prizes = [
+  { label:"Free 1 pc",  emoji:"🍗",    name:"1 Free Piece!",           desc:"Get 1 extra piece — on us!",              color:"#FAC775", textColor:"#633806" },
+  { label:"5% OFF",     emoji:"🏷️",   name:"5% Discount Voucher",     desc:"Use at checkout on your next order.",     color:"#9FE1CB", textColor:"#085041" },
+  { label:"Free 2 pcs", emoji:"🍗",    name:"2 Free Pieces!",          desc:"Double the treat — 2 pieces free!",       color:"#F5C4B3", textColor:"#712B13" },
+  { label:"Free ship",  emoji:"🚚",    name:"Free Shipping!",          desc:"No delivery fee on your next order.",     color:"#B5D4F4", textColor:"#0C447C" },
+  { label:"10% OFF",    emoji:"💸",    name:"10% Discount Voucher",    desc:"Save big on your next purchase!",         color:"#C0DD97", textColor:"#27500A" },
+  { label:"Free box",   emoji:"📦",    name:"Free Box!",               desc:"A whole box, completely free!",           color:"#F4C0D1", textColor:"#72243E" },
+  { label:"Try again",  emoji:"🔄",    name:"Better luck next time!",  desc:"Use another code to spin again.",         color:"#E0DED6", textColor:"#444" },
+  { label:"5% OFF",     emoji:"🏷️",   name:"5% Discount Voucher",     desc:"Use at checkout on your next order.",     color:"#EEEDFE", textColor:"#3C3489" },
+];
+
+const canvas = document.getElementById('wheel');
+const ctx = canvas.getContext('2d');
+const N = prizes.length;
+const arc = (2 * Math.PI) / N;
+let currentAngle = 0, spinning = false, selectedPrize = null;
+
+function drawWheel(rot) {
+  ctx.clearRect(0, 0, 310, 310);
+  const cx = 155, cy = 155, r = 148;
+  for (let i = 0; i < N; i++) {
+    const s = rot + i * arc - Math.PI / 2;
+    const e = s + arc;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, s, e);
+    ctx.closePath();
+    ctx.fillStyle = prizes[i].color;
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(s + arc / 2);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = prizes[i].textColor;
+    ctx.font = 'bold 12px Nunito, sans-serif';
+    ctx.fillText(prizes[i].label, r - 14, 5);
+    ctx.restore();
+  }
+  ctx.beginPath();
+  ctx.arc(cx, cy, 24, 0, 2 * Math.PI);
+  ctx.fillStyle = '#D85A30';
+  ctx.fill();
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 11px Nunito, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('GO!', cx, cy);
+}
+
+drawWheel(0);
+
+function submitCode() {
+  const v = document.getElementById('codeInput').value.trim();
+  if (!v) { document.getElementById('codeInput').style.borderColor = '#E24B4A'; return; }
+  document.getElementById('panelCode').classList.add('hidden');
+  document.getElementById('panelSpin').classList.remove('hidden');
+  setStep(3);
+}
+
+function spinWheel() {
+  if (spinning) return;
+  spinning = true;
+  document.getElementById('spinBtn').disabled = true;
+  const idx = Math.floor(Math.random() * N);
+  selectedPrize = prizes[idx];
+  const extra = 2 * Math.PI * (6 + Math.random() * 2);
+  const targetStop = (N - idx) * arc - arc / 2;
+  const finalAngle = currentAngle + extra + (targetStop - (currentAngle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+  const duration = 4500;
+  const start = performance.now();
+  const startA = currentAngle;
+  function ease(t) { return 1 - Math.pow(1 - t, 4); }
+  function animate(now) {
+    const p = Math.min((now - start) / duration, 1);
+    currentAngle = startA + (finalAngle - startA) * ease(p);
+    drawWheel(currentAngle);
+    if (p < 1) { requestAnimationFrame(animate); }
+    else { spinning = false; showResult(); }
+  }
+  requestAnimationFrame(animate);
+}
+
+function showResult() {
+  document.getElementById('panelSpin').classList.add('hidden');
+  document.getElementById('panelResult').classList.remove('hidden');
+  document.getElementById('prizeEmoji').textContent = selectedPrize.emoji;
+  document.getElementById('prizeName').textContent = selectedPrize.name;
+  document.getElementById('prizeDesc').textContent = selectedPrize.desc;
+  setStep(4);
+}
+
+function claimPrize() {
+  document.getElementById('panelResult').classList.add('hidden');
+  document.getElementById('panelClaimed').classList.remove('hidden');
+  document.getElementById('claimedMsg').textContent = selectedPrize.name + ' has been added to your account. Thanks for playing!';
+}
+
+function resetGame() {
+  ['panelClaimed','panelResult','panelSpin'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  document.getElementById('panelCode').classList.remove('hidden');
+  document.getElementById('codeInput').value = '';
+  document.getElementById('codeInput').style.borderColor = '';
+  document.getElementById('spinBtn').disabled = false;
+  spinning = false; currentAngle = 0;
+  drawWheel(0);
+  setStep(1);
+}
+
+function setStep(n) {
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById('s' + i);
+    el.classList.remove('active','done');
+    if (i < n) el.classList.add('done');
+    if (i === n) el.classList.add('active');
+  }
+}
+</script>
+</body>
+</html>
