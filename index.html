@@ -1,72 +1,176 @@
-<script>
-// ─── Updated Prize Config (Total Weight: 100) ──────────────────────
-const PRIZES = [
-  { label:"1 PACK",     emoji:"📦", name:"1 Pack Vibe+",        desc:"Get 1 extra pack added to your order!",      color:"#E8B84B", textColor:"#0D1B2A", weight: 15 },
-  { label:"2 PACK",     emoji:"📦📦", name:"2 Packs Vibe+",     desc:"Double the energy! 2 extra packs for you.",  color:"#1D9E75", textColor:"#fff",    weight: 3  },
-  { label:"5% OFF",     emoji:"🏷️", name:"5% Voucher",         desc:"Enjoy 5% off your next purchase.",           color:"#E8B84B", textColor:"#0D1B2A", weight: 45 },
-  { label:"10% OFF",    emoji:"🎟️", name:"10% Voucher",        desc:"Enjoy 10% off your next purchase.",          color:"#1D9E75", textColor:"#fff",    weight: 30 },
-  { label:"50% OFF",    emoji:"🔥", name:"50% Voucher",        desc:"Huge Savings! Half price on your next buy.", color:"#E8B84B", textColor:"#0D1B2A", weight: 5  },
-  { label:"FREE BOX",   emoji:"🎁", name:"Free Vibe+ Box",     desc:"A whole box of Vibe+ patches for free!",     color:"#1D9E75", textColor:"#fff",    weight: 1.5},
-  { label:"6 BOX SET",  emoji:"🏆", name:"Set of 6 Boxes",     desc:"The Ultimate Prize! 6 full Vibe+ boxes.",    color:"#E8B84B", textColor:"#0D1B2A", weight: 0.5}
-];
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vibe+ Recharge Station | Luck Wheel</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .header-text {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #00ffcc; /* Vibe+ energetic neon color */
+            margin-bottom: 5px;
+        }
+        .wheel-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+        }
+        /* The pointer at the top */
+        .pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 30px solid #ff0055;
+            z-index: 10;
+        }
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 5px solid #333;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.1, 1);
+            background: conic-gradient(
+                #1e1e1e 0deg 51.4deg, 
+                #2a2a2a 51.4deg 102.8deg, 
+                #1e1e1e 102.8deg 154.2deg, 
+                #2a2a2a 154.2deg 205.6deg, 
+                #1e1e1e 205.6deg 257deg, 
+                #2a2a2a 257deg 308.4deg, 
+                #00ffcc 308.4deg 360deg /* Highlight for the big prize */
+            );
+        }
+        .spin-btn {
+            margin-top: 40px;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #121212;
+            background-color: #00ffcc;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(0, 255, 204, 0.5);
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .spin-btn:hover {
+            transform: scale(1.05);
+            background-color: #00ccaa;
+        }
+        .spin-btn:disabled {
+            background-color: #555;
+            color: #888;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            min-height: 35px;
+            color: #ff0055;
+        }
+    </style>
+</head>
+<body>
 
-const canvas = document.getElementById('wheel');
-const ctx = canvas.getContext('2d');
-const spinBtn = document.getElementById('spinBtn');
-let currentRotation = 0;
+    <div class="header-text">
+        <h1>Vibe+ Luck Wheel</h1>
+<p>Fuel your modern hustle. Spin to win!</p>
+    </div>
 
-// Draw the wheel with updated labels
-function drawWheel() {
-  const arc = (2 * Math.PI) / PRIZES.length;
-  PRIZES.forEach((p, i) => {
-    const angle = i * arc;
-    ctx.beginPath();
-    ctx.fillStyle = p.color;
-    ctx.moveTo(160, 160);
-    ctx.arc(160, 160, 155, angle, angle + arc);
-    ctx.fill();
+    <div class="wheel-container">
+        <div class="pointer"></div>
+        <div class="wheel" id="wheel"></div>
+    </div>
 
-    ctx.save();
-    ctx.translate(160, 160);
-    ctx.rotate(angle + arc / 2);
-    ctx.fillStyle = p.textColor;
-    ctx.font = "bold 14px Orbitron";
-    ctx.textAlign = "right";
-    ctx.fillText(p.label, 140, 5);
-    ctx.restore();
-  });
-}
-drawWheel();
+    <button class="spin-btn" id="spinBtn" onclick="spinWheel()">Spin Now</button>
+    <div class="result" id="resultText"></div>
 
-// Weighted Logic: Selects prize based on your % chances
-function getWeightedRandomPrize() {
-  const totalWeight = PRIZES.reduce((sum, p) => sum + p.weight, 0);
-  let random = Math.random() * totalWeight;
-  for (let i = 0; i < PRIZES.length; i++) {
-    if (random < PRIZES[i].weight) return i;
-    random -= PRIZES[i].weight;
-  }
-  return 0;
-}
+    <script>
+        // Your specific prizes and their exact probability weights
+        const prizes = [
+            { name: "5% Off Voucher", weight: 45 },
+            { name: "10% Off Voucher", weight: 30 },
+            { name: "1 Free Pack", weight: 15 },
+            { name: "50% Off Voucher", weight: 5 },
+            { name: "2 Free Packs", weight: 3 },
+            { name: "1 Free Vibe+ Box", weight: 1.5 },
+            { name: "1 Set of 6 Vibe+ Boxes", weight: 0.5 }
+        ];
 
-function spinWheel() {
-  spinBtn.disabled = true;
-  const prizeIndex = getWeightedRandomPrize();
-  const arc = 360 / PRIZES.length;
-  
-  // Calculate rotation to land on the slice
-  const extraSpins = 5 * 360; 
-  const finalAngle = extraSpins + (360 - (prizeIndex * arc) - (arc / 2));
-  
-  currentRotation += finalAngle;
-  canvas.style.transition = "transform 4s cubic-bezier(0.15, 0, 0.15, 1)";
-  canvas.style.transform = `rotate(${currentRotation}deg)`;
+        let currentRotation = 0;
 
-  setTimeout(() => {
-    showResult(PRIZES[prizeIndex]);
-  }, 4100);
-}
+        function getRandomPrize() {
+            // Generate a random number between 0 and 100
+            let rand = Math.random() * 100;
+            let sum = 0;
+            
+            for (let i = 0; i < prizes.length; i++) {
+                sum += prizes[i].weight;
+                if (rand <= sum) {
+                    return i; // Returns the index of the winning prize
+                }
+            }
+            return 0; // Fallback
+        }
 
-// ... rest of your UI logic (submitCode, claimPrize, etc.) ...
-</script>
-  
+        function spinWheel() {
+            const btn = document.getElementById('spinBtn');
+            const resultText = document.getElementById('resultText');
+            const wheel = document.getElementById('wheel');
+            
+            btn.disabled = true;
+            resultText.innerText = "Generating energy...";
+
+            // 1. Calculate the winner using your business logic
+            const winningIndex = getRandomPrize();
+            
+            // 2. Visual Math: There are 7 slices, each is ~51.42 degrees
+            const sliceAngle = 360 / prizes.length;
+            
+            // 3. Calculate where to stop (add multiple full rotations for effect)
+            const spins = 5 * 360; // 5 full spins
+            // We subtract the winning index angle to make it stop perfectly under the top pointer
+            const stopAngle = spins - (winningIndex * sliceAngle) - (sliceAngle / 2); 
+            
+            currentRotation += stopAngle;
+
+            // Apply the rotation animation
+            wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+            // Wait for the CSS transition (4 seconds) to finish before showing the result
+            setTimeout(() => {
+                resultText.innerText = `You won: ${prizes[winningIndex].name}!`;
+                btn.disabled = false;
+                
+                // If they win the 0.5% Grand Prize, make it exciting!
+                if(winningIndex === 6) {
+                    resultText.innerText = `🔥 JACKPOT: ${prizes[winningIndex].name} 🔥`;
+                }
+            }, 4000);
+        }
+    </script>
+</body>
+</html>
