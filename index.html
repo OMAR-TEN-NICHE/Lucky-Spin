@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vibe+ Recharge Station | Luck Wheel</title>
+    <title>Vibe+ Recharge Station | VGU Luck Wheel</title>
     <style>
+        /* General styling for a premium dark neon aesthetic */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #121212;
+            background: radial-gradient(circle at center, #1a1a1a, #0d0d0d); /* Soft dark background to reduce harsh reflections */
             color: #ffffff;
             display: flex;
             flex-direction: column;
@@ -17,23 +18,36 @@
             margin: 0;
             overflow: hidden;
         }
+
+        /* Neon glow effects for text and elements */
+        .neon-text-cyan {
+            color: #00ffcc;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.8), 0 0 20px rgba(0, 255, 204, 0.5);
+        }
+        .neon-text-white {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
         .header-text {
             text-align: center;
             margin-bottom: 20px;
         }
         h1 {
-            color: #00ffcc; /* Vibe+ energetic neon color */
+            font-size: 2.5rem;
             margin-bottom: 5px;
         }
+
         .wheel-container {
             position: relative;
-            width: 300px;
-            height: 300px;
+            width: 320px;
+            height: 320px;
         }
-        /* The pointer at the top */
+
+        /* Upgraded pointer: neon red with strong glow */
         .pointer {
             position: absolute;
-            top: -15px;
+            top: -10px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
@@ -42,30 +56,44 @@
             border-right: 20px solid transparent;
             border-top: 30px solid #ff0055;
             z-index: 10;
+            filter: drop-shadow(0 0 10px #ff0055);
         }
-        .wheel {
+
+        /* The main wheel uses SVG for sharp segments and text */
+        .wheel-svg {
             width: 100%;
             height: 100%;
             border-radius: 50%;
             border: 5px solid #333;
             box-shadow: 0 0 20px rgba(0, 255, 204, 0.4);
             transition: transform 4s cubic-bezier(0.17, 0.67, 0.1, 1);
-            background: conic-gradient(
-                #1e1e1e 0deg 51.4deg, 
-                #2a2a2a 51.4deg 102.8deg, 
-                #1e1e1e 102.8deg 154.2deg, 
-                #2a2a2a 154.2deg 205.6deg, 
-                #1e1e1e 205.6deg 257deg, 
-                #2a2a2a 257deg 308.4deg, 
-                #00ffcc 308.4deg 360deg /* Highlight for the big prize */
-            );
+            filter: drop-shadow(0 0 10px #00ffcc); /* Neon cyan glow for the whole wheel */
         }
-        .spin-btn {
+
+        /* Styling for specific SVG elements */
+        .slice-path {
+            stroke: #00ffcc; /* Neon cyan segment outlines */
+            stroke-width: 1;
+            fill: #1a1a1a; /* Dark segment background */
+        }
+        .slice-text {
+            font-size: 8px; /* Correctly sized for the wheel */
+            font-weight: bold;
+            fill: #ffffff; /* White text for standard prizes */
+        }
+        /* Highlight for the 0.5% Grand Prize */
+        .highlight-path {
+            fill: #00ffcc; /* Full cyan fill */
+        }
+        .highlight-text {
+            fill: #1a1a1a; /* Dark text on cyan for readability */
+        }
+.spin-btn {
             margin-top: 40px;
             padding: 15px 40px;
             font-size: 1.2rem;
             font-weight: bold;
-            color: #121212;
+            color: #0d0d0d;
             background-color: #00ffcc;
             border: none;
             border-radius: 30px;
@@ -74,7 +102,7 @@
             box-shadow: 0 4px 15px rgba(0, 255, 204, 0.5);
             transition: transform 0.2s, background-color 0.2s;
         }
-        .spin-btn:hover {
+        .spin-btn:hover:not(:disabled) {
             transform: scale(1.05);
             background-color: #00ccaa;
         }
@@ -84,32 +112,71 @@
             cursor: not-allowed;
             box-shadow: none;
         }
+
         .result {
             margin-top: 20px;
             font-size: 1.5rem;
             font-weight: bold;
             min-height: 35px;
             color: #ff0055;
+            text-shadow: 0 0 10px rgba(255, 0, 85, 0.8), 0 0 20px rgba(255, 0, 85, 0.5);
+        }
+
+        .limit-message {
+            display: none; /* Hidden by default */
+            margin-top: 10px;
+            font-size: 1rem;
+            color: #ffaa00; /* Subtle warning color */
         }
     </style>
 </head>
 <body>
 
     <div class="header-text">
-        <h1>Vibe+ Luck Wheel</h1>
-<p>Fuel your modern hustle. Spin to win!</p>
+        <h1 class="neon-text-cyan">Vibe+ Luck Wheel</h1>
+        <p class="neon-text-white">Fuel your modern hustle at VGU. Spin to win!</p>
     </div>
 
     <div class="wheel-container">
         <div class="pointer"></div>
-        <div class="wheel" id="wheel"></div>
+        
+        <svg viewBox="0 0 200 200" class="wheel-svg" id="wheelSvg">
+            <defs>
+                <path id="path0" d="M100,20 A80,80 0 0,1 151,139"></path>
+                <path id="path1" d="M100,20 A80,80 0 0,1 180,100"></path>
+                <path id="path2" d="M100,20 A80,80 0 0,1 171,61"></path>
+                <path id="path3" d="M100,20 A80,80 0 0,1 139,31"></path>
+                <path id="path4" d="M100,20 A80,80 0 0,1 100,20"></path>
+                <path id="path5" d="M100,20 A80,80 0 0,1 61,29"></path>
+                <path id="path6" d="M100,20 A80,80 0 0,1 29,100"></path>
+            </defs>
+            <g id="wheelGroup" transform="rotate(-90 100 100)">
+                <path class="slice-path" d="M100,100 L100,20 A80,80 0 0,1 151.4,139.6 Z"></path>
+                <path class="slice-path" d="M100,100 L151.4,139.6 A80,80 0 0,1 100.0,180 Z"></path>
+                <path class="slice-path" d="M100,100 L100.0,180 A80,80 0 0,1 48.6,139.6 Z"></path>
+                <path class="slice-path" d="M100,100 L48.6,139.6 A80,80 0 0,1 48.6,60.4 Z"></path>
+                <path class="slice-path" d="M100,100 L48.6,60.4 A80,80 0 0,1 100.0,20 Z"></path>
+                <path class="slice-path" d="M100,100 L100.0,20 A80,80 0 0,1 151.4,60.4 Z"></path>
+                <path class="slice-path highlight-path" d="M100,100 L151.4,60.4 A80,80 0 0,1 151.4,139.6 Z"></path>
+<text class="slice-text"><textPath xlink:href="#path0" startOffset="30%">5% VOUCHER</textPath></text>
+                <text class="slice-text"><textPath xlink:href="#path1" startOffset="30%">10% VOUCHER</textPath></text>
+                <text class="slice-text"><textPath xlink:href="#path2" startOffset="30%">1 FREE PACK</textPath></text>
+                <text class="slice-text"><textPath xlink:href="#path3" startOffset="30%">50% VOUCHER</textPath></text>
+                <text class="slice-text"><textPath xlink:href="#path4" startOffset="30%">2 FREE PACKS</textPath></text>
+                <text class="slice-text"><textPath xlink:href="#path5" startOffset="30%">1 FREE BOX</textPath></text>
+                <text class="slice-text highlight-text"><textPath xlink:href="#path6" startOffset="25%">6 BOX SET (GRAND)</textPath></text>
+            </g>
+        </svg>
     </div>
 
     <button class="spin-btn" id="spinBtn" onclick="spinWheel()">Spin Now</button>
+    <div class="limit-message" id="limitMessage">⚠️ You have already rolled! (1 per person limit)</div>
     <div class="result" id="resultText"></div>
 
     <script>
-        // Your specific prizes and their exact probability weights
+        // Use a unique key for the VGU campaign's luck wheel to manage the budget
+        const STORAGE_KEY = 'vibe_luck_wheel_rolled_vgu';
+
         const prizes = [
             { name: "5% Off Voucher", weight: 45 },
             { name: "10% Off Voucher", weight: 30 },
@@ -122,56 +189,60 @@
 
         let currentRotation = 0;
 
+        // INITIAL CHECK: Look for existing roll in Local Storage
+        window.onload = function() {
+            if (localStorage.getItem(STORAGE_KEY)) {
+                disableSpinButton();
+                document.getElementById('resultText').innerText = "Already Rolled!";
+                document.getElementById('limitMessage').style.display = "block"; // Show the message
+            }
+        };
+
+        function disableSpinButton() {
+            document.getElementById('spinBtn').disabled = true;
+        }
+
         function getRandomPrize() {
-            // Generate a random number between 0 and 100
             let rand = Math.random() * 100;
             let sum = 0;
-            
             for (let i = 0; i < prizes.length; i++) {
                 sum += prizes[i].weight;
-                if (rand <= sum) {
-                    return i; // Returns the index of the winning prize
-                }
+                if (rand <= sum) return i;
             }
             return 0; // Fallback
         }
 
         function spinWheel() {
+            if (localStorage.getItem(STORAGE_KEY)) {
+                alert("You have already used your 1 roll per person limit. Good luck next campaign!");
+                return;
+            }
+
             const btn = document.getElementById('spinBtn');
             const resultText = document.getElementById('resultText');
-            const wheel = document.getElementById('wheel');
+const wheel = document.getElementById('wheelGroup'); // Target the SVG group for rotation
             
             btn.disabled = true;
-            resultText.innerText = "Generating energy...";
+            resultText.innerText = "Recharging focus...";
 
-            // 1. Calculate the winner using your business logic
             const winningIndex = getRandomPrize();
             
-            // 2. Visual Math: There are 7 slices, each is ~51.42 degrees
+            //  Visual Math: 7 precise slices are 360/7 degrees each
             const sliceAngle = 360 / prizes.length;
-            
-            // 3. Calculate where to stop (add multiple full rotations for effect)
             const spins = 5 * 360; // 5 full spins
-            // We subtract the winning index angle to make it stop perfectly under the top pointer
-            const stopAngle = spins - (winningIndex * sliceAngle) - (sliceAngle / 2); 
+            
+            // Stop perfectly under the pointer. Offset and base rotation for SVG.
+            const stopAngle = spins + ((prizes.length - 1 - winningIndex) * sliceAngle); 
             
             currentRotation += stopAngle;
 
-            // Apply the rotation animation
+            // Apply the sharp visual rotation to the SVG
             wheel.style.transform = `rotate(${currentRotation}deg)`;
 
-            // Wait for the CSS transition (4 seconds) to finish before showing the result
+            // PERSIST THE RESULT BEFORE SHOWING: Prevents people from cheating by reloading during the spin
+            localStorage.setItem(STORAGE_KEY, prizes[winningIndex].name);
+
             setTimeout(() => {
-                resultText.innerText = `You won: ${prizes[winningIndex].name}!`;
-                btn.disabled = false;
-                
-                // If they win the 0.5% Grand Prize, make it exciting!
+                // Check if jackpot
                 if(winningIndex === 6) {
-                    resultText.innerText = `🔥 JACKPOT: ${prizes[winningIndex].name} 🔥`;
-                }
-            }, 4000);
-        }
-    </script>
-</body>
-</html>
-   
+                    resultText.innerHTML = `🔥 JACKPOT: ${prizes[winningIndex].name} 🔥`;
