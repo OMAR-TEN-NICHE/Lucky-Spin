@@ -1,311 +1,71 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Vibe+ Lucky Spin – Ten-Niche</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet"/>
-<style>
-*{box-sizing:border-box;margin:0;padding:0;}
-body{
-  font-family:'Rajdhani',sans-serif;
-  background:#0D1B2A;
-  min-height:100vh;
-  display:flex;flex-direction:column;align-items:center;
-  padding:28px 16px 48px;gap:18px;color:#fff;
-  position:relative;overflow-x:hidden;
-}
-body::before{
-  content:'';position:fixed;inset:0;z-index:0;
-  background-image:
-    linear-gradient(rgba(30,100,255,0.06) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(30,100,255,0.06) 1px,transparent 1px);
-  background-size:36px 36px;pointer-events:none;
-}
-.wrap{position:relative;z-index:1;width:100%;max-width:480px;display:flex;flex-direction:column;align-items:center;gap:18px;}
-
-.header{text-align:center;}
-.brand-sub{font-size:11px;font-weight:700;letter-spacing:4px;color:#E8B84B;text-transform:uppercase;margin-bottom:4px;}
-.brand-name{font-family:'Orbitron',monospace;font-size:30px;font-weight:900;color:#fff;letter-spacing:3px;text-shadow:0 0 24px rgba(232,184,75,0.45);}
-.brand-name span{color:#E8B84B;}
-.tagline{font-size:12px;color:rgba(255,255,255,0.4);margin-top:5px;letter-spacing:2px;text-transform:uppercase;}
-
-.step-bar{display:flex;width:100%;border-radius:40px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);}
-.step{flex:1;display:flex;flex-direction:column;align-items:center;padding:9px 4px;background:rgba(255,255,255,0.04);font-size:9px;color:rgba(255,255,255,0.3);font-weight:700;gap:3px;transition:.3s;text-transform:uppercase;letter-spacing:.5px;}
-.step.active{background:#E8B84B;color:#0D1B2A;}
-.step.done{background:#1D9E75;color:#fff;}
-.step-icon{font-size:14px;}
-
-.card{
-  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);
-  border-radius:20px;padding:28px 24px;width:100%;
-  display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;
-}
-.card h2{font-family:'Orbitron',monospace;font-size:16px;color:#fff;letter-spacing:1px;}
-.card p{font-size:13px;color:rgba(255,255,255,0.5);font-weight:600;line-height:1.6;}
-
-.code-row{display:flex;gap:8px;width:100%;}
-.code-row input{
-  flex:1;font-family:'Orbitron',monospace;font-size:20px;font-weight:700;
-  letter-spacing:6px;text-align:center;text-transform:uppercase;
-  border:1.5px solid rgba(232,184,75,0.3);border-radius:12px;
-  padding:12px;background:rgba(0,0,0,0.35);color:#E8B84B;outline:none;
-  transition:border-color .2s;
-}
-.code-row input:focus{border-color:#E8B84B;box-shadow:0 0 0 3px rgba(232,184,75,0.1);}
-.code-row input::placeholder{color:rgba(255,255,255,0.15);letter-spacing:3px;font-size:14px;}
-
-.btn{
-  font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;
-  border:none;border-radius:50px;padding:13px 28px;cursor:pointer;
-  transition:transform .1s,opacity .2s;width:100%;
-  letter-spacing:1.5px;text-transform:uppercase;
-}
-.btn:active{transform:scale(0.97);}
-.btn-primary{background:linear-gradient(135deg,#E8B84B 0%,#d4a030 100%);color:#0D1B2A;}
-.btn-primary:hover{opacity:.9;}
-.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.55);}
-.hint{font-size:11px;color:rgba(255,255,255,0.22);font-style:italic;}
-.err-msg{font-size:12px;color:#ef4444;font-weight:700;display:none;}
-
-.wheel-section{display:flex;flex-direction:column;align-items:center;gap:16px;}
-.wheel-container{position:relative;width:320px;height:320px;}
-.wheel-glow{position:absolute;inset:-12px;border-radius:50%;background:radial-gradient(circle,rgba(232,184,75,0.12) 0%,transparent 70%);pointer-events:none;}
-.wheel-pointer{
-  position:absolute;top:-8px;left:50%;transform:translateX(-50%);
-  width:0;height:0;
-  border-left:14px solid transparent;border-right:14px solid transparent;
-  border-top:30px solid #E8B84B;z-index:10;
-  filter:drop-shadow(0 2px 8px rgba(232,184,75,0.8));
-}
-#wheel{width:320px;height:320px;border-radius:50%;}
-.btn-spin{
-  background:linear-gradient(135deg,#E8B84B,#d4a030);color:#0D1B2A;
-  font-family:'Orbitron',monospace;font-size:14px;padding:15px 52px;
-  border-radius:50px;box-shadow:0 4px 24px rgba(232,184,75,0.4);letter-spacing:2px;
-}
-.btn-spin:disabled{opacity:.35;cursor:not-allowed;}
-.spin-note{font-size:11px;color:rgba(255,255,255,0.22);letter-spacing:1px;}
-
-.prize-emoji{font-size:54px;}
-.prize-name{font-family:'Orbitron',monospace;font-size:19px;color:#E8B84B;letter-spacing:1px;}
-.prize-desc{font-size:13px;color:rgba(255,255,255,0.55);font-weight:600;}
-
-.claimed-prize-box{
-  padding:12px 20px;
-  background:rgba(232,184,75,0.08);
-  border:1px solid rgba(232,184,75,0.25);
-  border-radius:12px;
-  font-family:'Orbitron',monospace;font-size:13px;color:#E8B84B;letter-spacing:1px;
-}
-
-@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
-.shake{animation:shake .35s ease;}
-.hidden{display:none!important;}
-</style>
-</head>
-<body>
-<div class="wrap">
-
-  <div class="header">
-    <div class="brand-sub">Ten-Niche · Study Energy Patch</div>
-    <div class="brand-name">VIBE<span>+</span></div>
-    <div class="tagline">Scratch · Scan · Spin · Win</div>
-  </div>
-
-  <div class="step-bar" id="stepBar">
-    <div class="step active" id="s1"><span class="step-icon">🪙</span>Scratch</div>
-    <div class="step" id="s2"><span class="step-icon">🔑</span>Code</div>
-    <div class="step" id="s3"><span class="step-icon">🎡</span>Spin</div>
-    <div class="step" id="s4"><span class="step-icon">🎁</span>Claim</div>
-  </div>
-
-  <!-- Panel: Enter code -->
-  <div class="card" id="panelCode">
-    <div style="font-size:40px">🪙</div>
-    <h2>ENTER YOUR CODE</h2>
-    <p>Scratch the silver panel inside your Vibe+ pack to reveal your unique code. Enter it below to unlock your spin.</p>
-    <div class="code-row">
-      <input id="codeInput" type="text" maxlength="8" placeholder="••••••••" autocomplete="off" oninput="clearErr()"/>
-    </div>
-    <div class="err-msg" id="errMsg">❌ Invalid or already used code.</div>
-    <button class="btn btn-primary" onclick="submitCode()">ACTIVATE MY SPIN →</button>
-    <p class="hint">Demo: scratch code is VIBE2025</p>
-  </div>
-
-  <!-- Panel: Spin wheel -->
-  <div id="panelSpin" class="wheel-section hidden">
-    <div class="wheel-container">
-      <div class="wheel-glow"></div>
-      <div class="wheel-pointer"></div>
-      <canvas id="wheel" width="320" height="320"></canvas>
-    </div>
-    <button class="btn btn-spin" id="spinBtn" onclick="spinWheel()">⚡ SPIN NOW</button>
-    <div class="spin-note">1 spin per code — make it count!</div>
-  </div>
-
-  <!-- Panel: Result -->
-  <div class="card hidden" id="panelResult">
-    <div class="prize-emoji" id="prizeEmoji">🎉</div>
-    <div class="prize-name" id="prizeName"></div>
-    <div class="prize-desc" id="prizeDesc"></div>
-    <button class="btn btn-primary" onclick="claimPrize()">CLAIM MY REWARD 🎁</button>
-  </div>
-
-  <!-- Panel: Claimed -->
-  <div class="card hidden" id="panelClaimed">
-    <div style="font-size:46px">✅</div>
-    <h2>REWARD CLAIMED!</h2>
-    <p>Show this screen to Ten-Niche staff to redeem. Valid for 7 days from purchase.</p>
-    <div class="claimed-prize-box" id="claimedPrize"></div>
-    <button class="btn btn-ghost" onclick="resetGame()">Done</button>
-  </div>
-
-</div>
-
 <script>
-// ─── Prize config ─────────────────────────────────────────────────
-// weight = how many tickets out of 100 go to this prize
-// Low weight = hard to win = keeps cost down
+// ─── Updated Prize Config (Total Weight: 100) ──────────────────────
 const PRIZES = [
-  { label:"10% OFF",   emoji:"💸", name:"10% OFF Voucher",    desc:"10% discount on your next Vibe+ order.",     color:"#E8B84B", textColor:"#0D1B2A", weight:5  },
-  { label:"FREE SHIP", emoji:"🚚", name:"Free Shipping!",      desc:"Free delivery on your next Vibe+ order.",    color:"#3B82F6", textColor:"#fff",     weight:8  },
-  { label:"5% OFF",    emoji:"🏷️", name:"5% OFF Voucher",     desc:"5% discount on your next Vibe+ order.",      color:"#f59e0b", textColor:"#0D1B2A", weight:12 },
-  { label:"No Prize",  emoji:"⚡", name:"Keep Going!",         desc:"Stay focused — Vibe+ has your back!",        color:"#1e3a5f", textColor:"rgba(255,255,255,0.65)", weight:37 },
-  { label:"No Prize",  emoji:"🔄", name:"Better Luck Next Time!", desc:"Every patch is a new chance. Don't stop!", color:"#243447", textColor:"rgba(255,255,255,0.65)", weight:38 },
+  { label:"1 PACK",     emoji:"📦", name:"1 Pack Vibe+",        desc:"Get 1 extra pack added to your order!",      color:"#E8B84B", textColor:"#0D1B2A", weight: 15 },
+  { label:"2 PACK",     emoji:"📦📦", name:"2 Packs Vibe+",     desc:"Double the energy! 2 extra packs for you.",  color:"#1D9E75", textColor:"#fff",    weight: 3  },
+  { label:"5% OFF",     emoji:"🏷️", name:"5% Voucher",         desc:"Enjoy 5% off your next purchase.",           color:"#E8B84B", textColor:"#0D1B2A", weight: 45 },
+  { label:"10% OFF",    emoji:"🎟️", name:"10% Voucher",        desc:"Enjoy 10% off your next purchase.",          color:"#1D9E75", textColor:"#fff",    weight: 30 },
+  { label:"50% OFF",    emoji:"🔥", name:"50% Voucher",        desc:"Huge Savings! Half price on your next buy.", color:"#E8B84B", textColor:"#0D1B2A", weight: 5  },
+  { label:"FREE BOX",   emoji:"🎁", name:"Free Vibe+ Box",     desc:"A whole box of Vibe+ patches for free!",     color:"#1D9E75", textColor:"#fff",    weight: 1.5},
+  { label:"6 BOX SET",  emoji:"🏆", name:"Set of 6 Boxes",     desc:"The Ultimate Prize! 6 full Vibe+ boxes.",    color:"#E8B84B", textColor:"#0D1B2A", weight: 0.5}
 ];
 
-// Build weighted ticket pool
-const pool = [];
-PRIZES.forEach(p => { for(let i=0;i<p.weight;i++) pool.push(p); });
-
-// Valid codes — in production load from backend
-const VALID_CODES = new Set(["VIBE2025"]);
-const usedCodes   = new Set();
-
-const N   = PRIZES.length;
-const ARC = (2 * Math.PI) / N;
-
 const canvas = document.getElementById('wheel');
-const ctx    = canvas.getContext('2d');
-let currentAngle = 0, spinning = false, selectedPrize = null;
+const ctx = canvas.getContext('2d');
+const spinBtn = document.getElementById('spinBtn');
+let currentRotation = 0;
 
-function drawWheel(rot) {
-  ctx.clearRect(0,0,320,320);
-  const cx=160, cy=160, r=152;
-  for (let i=0; i<N; i++) {
-    const s = rot + i*ARC - Math.PI/2;
-    const e = s + ARC;
-    // slice
-    ctx.beginPath(); ctx.moveTo(cx,cy);
-    ctx.arc(cx,cy,r,s,e); ctx.closePath();
-    ctx.fillStyle = PRIZES[i].color; ctx.fill();
-    ctx.strokeStyle = 'rgba(13,27,42,0.9)'; ctx.lineWidth = 3; ctx.stroke();
-    // label
+// Draw the wheel with updated labels
+function drawWheel() {
+  const arc = (2 * Math.PI) / PRIZES.length;
+  PRIZES.forEach((p, i) => {
+    const angle = i * arc;
+    ctx.beginPath();
+    ctx.fillStyle = p.color;
+    ctx.moveTo(160, 160);
+    ctx.arc(160, 160, 155, angle, angle + arc);
+    ctx.fill();
+
     ctx.save();
-    ctx.translate(cx,cy); ctx.rotate(s + ARC/2);
-    ctx.textAlign='right';
-    ctx.fillStyle = PRIZES[i].textColor;
-    ctx.font = 'bold 13px Rajdhani,sans-serif';
-    ctx.fillText(PRIZES[i].label, r-16, 5);
+    ctx.translate(160, 160);
+    ctx.rotate(angle + arc / 2);
+    ctx.fillStyle = p.textColor;
+    ctx.font = "bold 14px Orbitron";
+    ctx.textAlign = "right";
+    ctx.fillText(p.label, 140, 5);
     ctx.restore();
-  }
-  // center hub
-  ctx.beginPath(); ctx.arc(cx,cy,26,0,2*Math.PI);
-  ctx.fillStyle='#0D1B2A'; ctx.fill();
-  ctx.strokeStyle='#E8B84B'; ctx.lineWidth=3; ctx.stroke();
-  ctx.fillStyle='#E8B84B';
-  ctx.font='bold 10px Orbitron,monospace';
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText('V+', cx, cy);
+  });
 }
-drawWheel(0);
+drawWheel();
 
-function clearErr() {
-  document.getElementById('errMsg').style.display='none';
-  document.getElementById('codeInput').style.borderColor='rgba(232,184,75,0.3)';
-}
-
-function submitCode() {
-  const inp = document.getElementById('codeInput');
-  const val = inp.value.trim().toUpperCase();
-  const err = document.getElementById('errMsg');
-
-  if (!VALID_CODES.has(val) || usedCodes.has(val)) {
-    inp.style.borderColor='#ef4444';
-    err.style.display='block';
-    inp.classList.remove('shake'); void inp.offsetWidth; inp.classList.add('shake');
-    return;
+// Weighted Logic: Selects prize based on your % chances
+function getWeightedRandomPrize() {
+  const totalWeight = PRIZES.reduce((sum, p) => sum + p.weight, 0);
+  let random = Math.random() * totalWeight;
+  for (let i = 0; i < PRIZES.length; i++) {
+    if (random < PRIZES[i].weight) return i;
+    random -= PRIZES[i].weight;
   }
-  usedCodes.add(val);
-  document.getElementById('panelCode').classList.add('hidden');
-  document.getElementById('panelSpin').classList.remove('hidden');
-  setStep(3);
+  return 0;
 }
 
 function spinWheel() {
-  if (spinning) return;
-  spinning = true;
-  document.getElementById('spinBtn').disabled = true;
+  spinBtn.disabled = true;
+  const prizeIndex = getWeightedRandomPrize();
+  const arc = 360 / PRIZES.length;
+  
+  // Calculate rotation to land on the slice
+  const extraSpins = 5 * 360; 
+  const finalAngle = extraSpins + (360 - (prizeIndex * arc) - (arc / 2));
+  
+  currentRotation += finalAngle;
+  canvas.style.transition = "transform 4s cubic-bezier(0.15, 0, 0.15, 1)";
+  canvas.style.transform = `rotate(${currentRotation}deg)`;
 
-  // Weighted random result
-  selectedPrize = pool[Math.floor(Math.random() * pool.length)];
-
-  // Map prize to visual slice index
-  const idx = PRIZES.findIndex(p => p.color === selectedPrize.color);
-  // Target angle so that slice idx is under the pointer (top = -PI/2)
-  const sliceCenter = ARC * idx + ARC / 2; // midpoint of slice in natural coords
-  const targetOffset = (2*Math.PI - sliceCenter) % (2*Math.PI);
-  const rounds = 2*Math.PI * (7 + Math.random() * 2);
-  const norm   = (targetOffset - currentAngle % (2*Math.PI) + 2*Math.PI) % (2*Math.PI);
-  const finalAngle = currentAngle + rounds + norm;
-
-  const duration = 5200, start = performance.now(), startA = currentAngle;
-  function ease(t) { return 1 - Math.pow(1-t, 4); }
-  function animate(now) {
-    const p = Math.min((now - start) / duration, 1);
-    currentAngle = startA + (finalAngle - startA) * ease(p);
-    drawWheel(currentAngle);
-    if (p < 1) { requestAnimationFrame(animate); }
-    else { spinning = false; showResult(); }
-  }
-  requestAnimationFrame(animate);
+  setTimeout(() => {
+    showResult(PRIZES[prizeIndex]);
+  }, 4100);
 }
 
-function showResult() {
-  document.getElementById('panelSpin').classList.add('hidden');
-  document.getElementById('panelResult').classList.remove('hidden');
-  document.getElementById('prizeEmoji').textContent = selectedPrize.emoji;
-  document.getElementById('prizeName').textContent  = selectedPrize.name;
-  document.getElementById('prizeDesc').textContent  = selectedPrize.desc;
-  setStep(4);
-}
-
-function claimPrize() {
-  document.getElementById('panelResult').classList.add('hidden');
-  document.getElementById('panelClaimed').classList.remove('hidden');
-  document.getElementById('claimedPrize').textContent = '🎁 ' + selectedPrize.name;
-}
-
-function resetGame() {
-  ['panelClaimed','panelResult','panelSpin'].forEach(id =>
-    document.getElementById(id).classList.add('hidden'));
-  document.getElementById('panelCode').classList.remove('hidden');
-  document.getElementById('codeInput').value = '';
-  clearErr();
-  document.getElementById('spinBtn').disabled = false;
-  spinning = false; currentAngle = 0; drawWheel(0);
-  setStep(1);
-}
-
-function setStep(n) {
-  for (let i=1; i<=4; i++) {
-    const el = document.getElementById('s'+i);
-    el.classList.remove('active','done');
-    if (i < n) el.classList.add('done');
-    if (i === n) el.classList.add('active');
-  }
-}
+// ... rest of your UI logic (submitCode, claimPrize, etc.) ...
 </script>
-</body>
-</html>
